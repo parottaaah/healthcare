@@ -63,6 +63,16 @@ If you change any SQLAlchemy models, you can generate a new migration script aut
 alembic revision --autogenerate -m "description of changes"
 ```
 
+## Uploading a bill
+
+You can upload a bill (PDF, JPEG, or PNG) to the API for OCR parsing and line-item extraction. Example `curl` request:
+
+```bash
+curl -X POST http://localhost:8000/bills/upload \
+  -F "user_id=123e4567-e89b-12d3-a456-426614174000" \
+  -F "file=@/path/to/your/bill.pdf"
+```
+
 ## Environment Variables
 
 Environment variables are managed through `.env` files. We provide template files for both applications:
