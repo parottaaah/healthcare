@@ -12,4 +12,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from app.routers import bills
+
 app.include_router(health.router)
+app.include_router(bills.router)
