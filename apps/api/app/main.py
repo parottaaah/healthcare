@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.routes import health
 
 app = FastAPI(title="DecryptCare API")
 
@@ -11,7 +12,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@app.get("/health")
-def health_check():
-    return {"status": "ok", "service": "decryptcare-api"}
+app.include_router(health.router)
