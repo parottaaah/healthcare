@@ -8,6 +8,7 @@ from unittest.mock import patch
 from app.services.bill_parser import parse_line_items, extract_text
 from app.models.bill import Bill
 from app.models.bill_line_item import BillLineItem
+import app.services.bill_explainer
 
 # We import the test client and engine from our existing test_api setup
 # But we need to make sure the db is created and passed around.
@@ -102,3 +103,70 @@ def test_upload_invalid_extension(tmp_path):
         )
     assert response.status_code == 400
     assert "File type not allowed" in response.json()["detail"]
+
+@patch('app.services.bill_explainer.anthropic_client')
+def test_explain_line_item_success(mock_anthropic):
+    from app.services.bill_explainer import explain_line_item
+    import json
+    
+    # Mock Anthropic Response
+    mock_message = mock_anthropic.messages.create.return_value
+    mock_message.content = [type('obj', (object,), {'text': '{"explanation": "A common blood test", "flagged": false, "reasoning": "Standard charge"}'})]
+    
+    result = explain_line_item("Blood Test", 50.0)
+    assert result["explanation"] == "A common blood test"
+    assert result["flagged"] is False
+
+@patch('app.services.bill_explainer.anthropic_client')
+def test_explain_line_item_malformed(mock_anthropic):
+    from app.services.bill_explainer import explain_line_item
+    
+    # Mock Malformed Response
+    mock_message = mock_anthropic.messages.create.return_value
+    mock_message.content = [type('obj', (object,), {'text': 'not valid json'})]
+    
+    result = explain_line_item("Blood Test", 50.0)
+    assert "Failed to generate explanation" in result["explanation"]
+
+@patch('app.services.bill_explainer.anthropic_client')
+@patch('app.services.bill_parser.extract_text')
+def test_explain_bill_endpoint(mock_extract, mock_anthropic, tmp_path):
+    mock_extract.return_value = "Consultation Fee  150.00"
+    
+    mock_message = mock_anthropic.messages.create.return_value
+    mock_message.content = [type('obj', (object,), {'text': '{"explanation": "Doctor visit", "flagged": true, "reasoning": "Too high"}'})]
+    
+    test_file_path = tmp_path / "test_bill2.jpg"
+    test_file_path.write_text("dummy")
+    
+    db = TestingSessionLocal()
+    from app.models.user import User
+    import uuid
+    new_user = User(
+        phone_number=f"555-{uuid.uuid4().hex[:6]}",
+        name="Test Explain",
+        email=f"explain_{uuid.uuid4().hex[:6]}@example.com"
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    with open(test_file_path, "rb") as f:
+        upload_resp = client.post(
+            "/bills/upload",
+            data={"user_id": str(new_user.id)},
+            files={"file": ("test_bill2.jpg", f, "image/jpeg")}
+        )
+    
+    bill_id = upload_resp.json()["id"]
+    
+    # Call explain
+    explain_resp = client.post(f"/bills/{bill_id}/explain")
+    assert explain_resp.status_code == 200
+    
+    data = explain_resp.json()
+    assert len(data["line_items"]) == 1
+    assert data["line_items"][0]["explanation"] == "Doctor visit"
+    assert data["line_items"][0]["flagged_overcharge"] is True
+    
+    db.close()

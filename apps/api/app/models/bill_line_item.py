@@ -11,3 +11,4 @@ class BillLineItem(Base, CreatedAtMixin):
     description: Mapped[str] = mapped_column(String)
     amount: Mapped[float] = mapped_column(Numeric)
     flagged_overcharge: Mapped[bool] = mapped_column(Boolean, default=False)
+    explanation: Mapped[str | None] = mapped_column(String, nullable=True)

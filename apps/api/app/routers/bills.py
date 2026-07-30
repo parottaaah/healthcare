@@ -99,7 +99,8 @@ def upload_bill(
                 "id": li.id,
                 "description": li.description,
                 "amount": li.amount,
-                "flagged_overcharge": li.flagged_overcharge
+                "flagged_overcharge": li.flagged_overcharge,
+                "explanation": li.explanation
             }
             for li in line_items
         ]
@@ -125,7 +126,8 @@ def get_bill(bill_id: uuid.UUID, db: Session = Depends(get_db)):
                 "id": li.id,
                 "description": li.description,
                 "amount": li.amount,
-                "flagged_overcharge": li.flagged_overcharge
+                "flagged_overcharge": li.flagged_overcharge,
+                "explanation": li.explanation
             }
             for li in line_items
         ]
@@ -144,3 +146,16 @@ def list_bills(user_id: uuid.UUID, db: Session = Depends(get_db)):
         }
         for b in bills
     ]
+
+@router.post("/{bill_id}/explain")
+def explain_bill_endpoint(bill_id: uuid.UUID, db: Session = Depends(get_db)):
+    from app.services.bill_explainer import explain_bill
+    
+    # Note: For higher volume, this synchronous call should be moved to a background task/queue.
+    try:
+        summary = explain_bill(bill_id, db)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+        
+    # Re-fetch the bill to return it with the updated line items
+    return get_bill(bill_id, db)

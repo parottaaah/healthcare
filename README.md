@@ -73,6 +73,14 @@ curl -X POST http://localhost:8000/bills/upload \
   -F "file=@/path/to/your/bill.pdf"
 ```
 
+## AI Bill Explanations
+
+To generate AI explanations and flag potential overcharges for line items, make sure you have set the `ANTHROPIC_API_KEY` in your `.env` file. Then, you can call the explain endpoint:
+
+```bash
+curl -X POST http://localhost:8000/bills/{bill_id}/explain
+```
+
 ## Environment Variables
 
 Environment variables are managed through `.env` files. We provide template files for both applications:

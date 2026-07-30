@@ -31,3 +31,4 @@ pytesseract==0.3.13
 # Converts PDF to images (needs poppler-utils system package)
 pdf2image==1.17.0
 Pillow==10.4.0
+anthropic>=0.40.0
