@@ -6,7 +6,7 @@ DecryptCare is an AI-powered healthcare billing transparency platform designed t
 
 ```text
 .
-├── docker-compose.yml     # Infrastructure services (Postgres, Redis, etc.)
+├── docker-compose.yml     # Infrastructure services (Postgres, Redis, API)
 ├── apps
 │   ├── api                # FastAPI backend Python application
 │   └── web                # Vite frontend application
@@ -21,24 +21,27 @@ DecryptCare is an AI-powered healthcare billing transparency platform designed t
 
 ## Getting Started
 
-### 1. Start Infrastructure
-Start the required background services using Docker Compose:
+### 1. Start the Backend & Infrastructure
+The easiest way to run the API alongside its required background services (Postgres and Redis) is using Docker Compose. Make sure you've copied the `.env` file first:
 ```bash
+cp apps/api/.env.example apps/api/.env
 docker compose up -d
 ```
+This spins up the database, cache, and the FastAPI backend together.
 
-### 2. Set Up the FastAPI Backend
-Navigate to the API directory and set up the Python environment:
+**(Alternative: Run the API without Docker)**
+If you prefer to run the API directly on your machine for debugging:
 ```bash
+docker compose up -d postgres redis  # Start only the infrastructure
 cd apps/api
 python -m venv .venv
 source .venv/bin/activate  # Or `.venv\Scripts\activate` on Windows
 pip install -r requirements.txt
 cp .env.example .env
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 ```
 
-### 3. Set Up the Vite Frontend
+### 2. Set Up the Vite Frontend
 Navigate to the frontend directory and start the dev server:
 ```bash
 cd apps/web
