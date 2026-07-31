@@ -138,7 +138,45 @@ We use the WhatsApp Cloud API to support bill upload and conversational QA via o
 - [x] AI-powered bill explanation
 - [x] WhatsApp webhook
 - [x] Auth
+- [x] Frontend bill dashboard
 - [ ] CI
+
+## Using the Web Dashboard
+
+The frontend runs at `http://localhost:5173` (start it with `npm run dev` in `apps/web`).
+
+### 1. Register
+
+Navigate to `/register`. Enter your name, email, phone number, and a password (minimum 8 characters). On success you'll be signed in automatically and redirected to the dashboard.
+
+```bash
+# Equivalent curl call:
+curl -X POST http://localhost:8000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@example.com","password":"mysecret8","name":"Jane","phone_number":"9876543210"}'
+```
+
+### 2. Sign in
+
+Go to `/login` with your email and password. The JWT token is stored in `localStorage`, so you stay signed in across refreshes. The client automatically attaches `Authorization: Bearer <token>` to every API request.
+
+### 3. Upload a bill
+
+On the dashboard, click **Choose file**, pick a PDF, JPEG, or PNG (max 10 MB), then click **Upload & Parse**. The backend runs OCR and extracts line items automatically. The bill card appears in the grid once processing completes.
+
+### 4. View and explain a bill
+
+Click any bill card to open its detail view. Line items, amounts, and (if available) AI explanations are shown in a list. Items flagged as potential overcharges are highlighted with a red **⚠️ Flagged** badge and a red left border.
+
+If the bill hasn't been explained yet, click **✨ Explain this bill** — this calls `POST /bills/{id}/explain` and populates each line item with a plain-language AI explanation and overcharge verdict.
+
+### 5. Frontend tests
+
+```bash
+cd apps/web
+npm test          # run once
+npm run test:watch  # watch mode
+```
 
 ## Contributing
 
