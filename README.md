@@ -90,6 +90,21 @@ Environment variables are managed through `.env` files. We provide template file
 To configure your environment, copy these `.example` files to `.env` in their respective directories and fill in the actual values. 
 **WARNING: Never commit a real `.env` file containing actual secrets.**
 
+## WhatsApp Integration (Nalam)
+
+We use the WhatsApp Cloud API to support bill upload and conversational QA via our assistant, Nalam.
+
+### Setup Instructions
+1. **Meta Developer App**: Go to the [Meta Developer Dashboard](https://developers.facebook.com/), create a Business app, and set up the WhatsApp product.
+2. **Test Number & Tokens**: Under the WhatsApp > API Setup section, you will find your temporary `WHATSAPP_ACCESS_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID`. Add these to your `.env` file.
+3. **Webhook Verification**: Create a random string and add it to your `.env` file as `WHATSAPP_VERIFY_TOKEN`.
+4. **Local Testing (Ngrok)**: Meta requires a public HTTPS URL for the webhook. If you're developing locally, use ngrok to expose your API:
+   ```bash
+   ngrok http 8000
+   ```
+   Take the resulting ngrok URL (e.g., `https://abcdef123.ngrok.app`) and configure your WhatsApp webhook in the Meta dashboard to point to `https://abcdef123.ngrok.app/webhooks/whatsapp`.
+5. Enter your `WHATSAPP_VERIFY_TOKEN` in the Meta dashboard to verify.
+
 ## Roadmap
 
 - [x] Milestone 1 scaffolding

@@ -107,3 +107,51 @@ def explain_bill(bill_id: uuid.UUID, db: Session) -> dict:
         "flagged_items": total_flagged,
         "status": "explanations_generated"
     }
+
+QA_PROMPT_TEMPLATE = """
+You are a helpful healthcare billing assistant named Nalam. A user has asked a question about their recent medical bill.
+
+Here are the line items from their bill:
+{bill_context}
+
+User's Question: "{question}"
+
+Please provide a concise, friendly, and helpful answer. Keep your response under 3 sentences.
+"""
+
+def answer_question(bill_id: str, question: str, db: Session) -> str:
+    """
+    Answers an arbitrary question about a specific bill using the LLM.
+    """
+    if not anthropic_client:
+        return "I'm currently unable to answer questions as AI explanations are disabled."
+
+    bill = db.get(Bill, bill_id)
+    if not bill:
+        return "I couldn't find the bill you're referring to."
+
+    stmt = select(BillLineItem).where(BillLineItem.bill_id == bill.id)
+    line_items = db.execute(stmt).scalars().all()
+    
+    if not line_items:
+        return "This bill doesn't seem to have any parsed line items yet."
+        
+    bill_context = ""
+    for item in line_items:
+        bill_context += f"- {item.description}: ${item.amount} (Flagged: {item.flagged_overcharge})\n"
+
+    prompt = QA_PROMPT_TEMPLATE.format(bill_context=bill_context, question=question)
+
+    try:
+        response = anthropic_client.messages.create(
+            model="claude-3-5-sonnet-20241022",
+            max_tokens=300,
+            temperature=0.0,
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
+        return response.content[0].text.strip()
+    except Exception as e:
+        print(f"Error answering question: {e}")
+        return "I'm sorry, I encountered an error while trying to answer your question."
