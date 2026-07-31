@@ -4,13 +4,14 @@ from app.api.routes import health
 from app.routers import bills
 from app.routers import whatsapp
 from app.routers import auth
+from app.core.config import settings
 
 app = FastAPI(title="DecryptCare API")
 
 # Setup CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[settings.frontend_origin],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
