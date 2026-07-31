@@ -4,12 +4,12 @@ import { MemoryRouter } from 'react-router-dom'
 import { AuthProvider } from '../context/AuthContext'
 import { DashboardPage } from '../pages/DashboardPage'
 import * as billsApi from '../api/bills'
-import { Bill } from '../api/bills'
+import type { Bill } from '../api/bills'
 
 vi.mock('../api/bills')
 
 // Mock fetch for health footer
-global.fetch = vi.fn().mockResolvedValue({
+globalThis.fetch = vi.fn().mockResolvedValue({
   json: () => Promise.resolve({ status: 'ok' }),
 } as Response)
 

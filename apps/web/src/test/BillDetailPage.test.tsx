@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from '../context/AuthContext'
 import { BillDetailPage } from '../pages/BillDetailPage'
 import * as billsApi from '../api/bills'
-import { Bill } from '../api/bills'
+import type { Bill } from '../api/bills'
 
 vi.mock('../api/bills')
 

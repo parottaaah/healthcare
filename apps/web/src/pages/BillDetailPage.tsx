@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getBill, explainBill, Bill, BillLineItem } from "../api/bills";
+import { getBill, explainBill } from "../api/bills";
+import type { Bill, BillLineItem } from "../api/bills";
 
 function formatCurrency(amount: number, currency: string) {
   try {
