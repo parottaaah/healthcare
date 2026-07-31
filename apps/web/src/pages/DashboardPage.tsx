@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef, FormEvent } from "react";
+import { useState, useEffect, useRef } from "react";
+import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getBills, uploadBill, Bill } from "../api/bills";
+import { getBills, uploadBill } from "../api/bills";
+import type { Bill } from "../api/bills";
 import { useAuth } from "../context/AuthContext";
 
 function StatusBadge({ status }: { status: Bill["status"] }) {
