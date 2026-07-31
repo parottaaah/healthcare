@@ -168,6 +168,13 @@ On the dashboard, click **Choose file**, pick a PDF, JPEG, or PNG (max 10 MB), t
 
 Click any bill card to see its line items. If the bill hasn't been explained yet, click **✨ Explain this bill** — this calls the AI explanation endpoint and populates each line item with a plain-language explanation. Items that look like potential overcharges are highlighted with a red **⚠️ Flagged** badge.
 
+## Deployment
+
+DecryptCare is configured for deployment using **Railway** (Backend & Infrastructure) and **Vercel** (Frontend).
+See the full [Deployment Guide](docs/DEPLOYMENT.md) for step-by-step instructions.
+
+**Live Demo:** [https://decryptcare.vercel.app](https://decryptcare.vercel.app) *(Placeholder)*
+
 ## Contributing
 
 Each new feature should be shipped as its own Pull Request. Please follow our PR templates and branch naming conventions.

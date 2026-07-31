@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     whatsapp_verify_token: str | None = None
     jwt_secret: str = "secret"
     jwt_expires_in_minutes: int = 60
+    frontend_origin: str = "http://localhost:5173"
 
     class Config:
         env_file = ".env"
