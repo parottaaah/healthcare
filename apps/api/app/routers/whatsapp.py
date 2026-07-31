@@ -71,7 +71,11 @@ def store_message(conversation_id: uuid.UUID, role: Role, content: str, db: Sess
 
 @router.post("")
 async def receive_webhook(request: Request, db: Session = Depends(get_db)):
-    """Receives incoming message payloads."""
+    """
+    Receives incoming message payloads.
+    NOTE: This endpoint is intentionally unauthenticated by JWT, as it uses 
+    Meta's own signature and verify-token mechanism for security.
+    """
     body = await request.json()
     
     # Process WhatsApp payload

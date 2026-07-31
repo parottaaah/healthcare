@@ -3,9 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import health
 from app.routers import bills
 from app.routers import whatsapp
+from app.routers import auth
 
 app = FastAPI(title="DecryptCare API")
 
+# Setup CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,5 +17,6 @@ app.add_middleware(
 )
 
 app.include_router(health.router)
+app.include_router(auth.router)
 app.include_router(bills.router)
 app.include_router(whatsapp.router)

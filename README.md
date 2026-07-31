@@ -63,22 +63,47 @@ If you change any SQLAlchemy models, you can generate a new migration script aut
 alembic revision --autogenerate -m "description of changes"
 ```
 
+## Authentication
+
+The web dashboard endpoints require JWT Bearer token authentication.
+
+### Registering a User
+
+To create a new user:
+```bash
+curl -X POST http://localhost:8000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com", "password":"mysecurepassword", "name":"Test User", "phone_number":"1234567890"}'
+```
+This will return an `access_token` that you can use to authenticate.
+
+### Logging In
+
+To log in and retrieve a token:
+```bash
+curl -X POST http://localhost:8000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com", "password":"mysecurepassword"}'
+```
+You will receive a JSON response containing the `access_token`.
+
 ## Uploading a bill
 
-You can upload a bill (PDF, JPEG, or PNG) to the API for OCR parsing and line-item extraction. Example `curl` request:
+You can upload a bill (PDF, JPEG, or PNG) to the API for OCR parsing and line-item extraction. Make sure you pass your JWT token in the `Authorization` header. Example `curl` request:
 
 ```bash
 curl -X POST http://localhost:8000/bills/upload \
-  -F "user_id=123e4567-e89b-12d3-a456-426614174000" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -F "file=@/path/to/your/bill.pdf"
 ```
 
 ## AI Bill Explanations
 
-To generate AI explanations and flag potential overcharges for line items, make sure you have set the `ANTHROPIC_API_KEY` in your `.env` file. Then, you can call the explain endpoint:
+To generate AI explanations and flag potential overcharges for line items, make sure you have set the `ANTHROPIC_API_KEY` in your `.env` file. Then, you can call the explain endpoint with your token:
 
 ```bash
-curl -X POST http://localhost:8000/bills/{bill_id}/explain
+curl -X POST http://localhost:8000/bills/{bill_id}/explain \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 ## Environment Variables
@@ -108,11 +133,11 @@ We use the WhatsApp Cloud API to support bill upload and conversational QA via o
 ## Roadmap
 
 - [x] Milestone 1 scaffolding
-- [ ] DB models/migrations
-- [ ] Bill upload + parsing pipeline
-- [ ] AI-powered bill explanation
-- [ ] WhatsApp webhook
-- [ ] Auth
+- [x] DB models/migrations
+- [x] Bill upload + parsing pipeline
+- [x] AI-powered bill explanation
+- [x] WhatsApp webhook
+- [x] Auth
 - [ ] CI
 
 ## Contributing

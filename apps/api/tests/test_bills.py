@@ -67,6 +67,7 @@ def test_upload_bill(mock_extract, tmp_path):
     db = TestingSessionLocal()
     from app.models.user import User
     import uuid
+    from app.services.auth import create_access_token
     new_user = User(
         phone_number=f"555-{uuid.uuid4().hex[:6]}",
         name="Test Upload User",
@@ -76,10 +77,13 @@ def test_upload_bill(mock_extract, tmp_path):
     db.commit()
     db.refresh(new_user)
     
+    token = create_access_token(str(new_user.id))
+    headers = {"Authorization": f"Bearer {token}"}
+    
     with open(test_file_path, "rb") as f:
         response = client.post(
             "/bills/upload",
-            data={"user_id": str(new_user.id)},
+            headers=headers,
             files={"file": ("test_bill.jpg", f, "image/jpeg")}
         )
         
@@ -95,14 +99,32 @@ def test_upload_invalid_extension(tmp_path):
     test_file_path = tmp_path / "test_bill.txt"
     test_file_path.write_text("hello")
     
+    # Create a dummy user in db
+    db = TestingSessionLocal()
+    from app.models.user import User
+    import uuid
+    from app.services.auth import create_access_token
+    new_user = User(
+        phone_number=f"555-{uuid.uuid4().hex[:6]}",
+        name="Test Upload User 2",
+        email=f"upload2_{uuid.uuid4().hex[:6]}@example.com"
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    token = create_access_token(str(new_user.id))
+    headers = {"Authorization": f"Bearer {token}"}
+    
     with open(test_file_path, "rb") as f:
         response = client.post(
             "/bills/upload",
-            data={"user_id": str(uuid.uuid4())},
+            headers=headers,
             files={"file": ("test_bill.txt", f, "text/plain")}
         )
     assert response.status_code == 400
     assert "File type not allowed" in response.json()["detail"]
+    db.close()
 
 @patch('app.services.bill_explainer.anthropic_client')
 def test_explain_line_item_success(mock_anthropic):
@@ -142,6 +164,7 @@ def test_explain_bill_endpoint(mock_extract, mock_anthropic, tmp_path):
     db = TestingSessionLocal()
     from app.models.user import User
     import uuid
+    from app.services.auth import create_access_token
     new_user = User(
         phone_number=f"555-{uuid.uuid4().hex[:6]}",
         name="Test Explain",
@@ -151,17 +174,20 @@ def test_explain_bill_endpoint(mock_extract, mock_anthropic, tmp_path):
     db.commit()
     db.refresh(new_user)
     
+    token = create_access_token(str(new_user.id))
+    headers = {"Authorization": f"Bearer {token}"}
+    
     with open(test_file_path, "rb") as f:
         upload_resp = client.post(
             "/bills/upload",
-            data={"user_id": str(new_user.id)},
+            headers=headers,
             files={"file": ("test_bill2.jpg", f, "image/jpeg")}
         )
     
     bill_id = upload_resp.json()["id"]
     
     # Call explain
-    explain_resp = client.post(f"/bills/{bill_id}/explain")
+    explain_resp = client.post(f"/bills/{bill_id}/explain", headers=headers)
     assert explain_resp.status_code == 200
     
     data = explain_resp.json()
