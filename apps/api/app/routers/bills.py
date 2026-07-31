@@ -8,8 +8,10 @@ from typing import List, Any
 from app.db import get_db
 from app.models.bill import Bill, BillStatus
 from app.models.bill_line_item import BillLineItem
+from app.models.user import User
 from app.services.storage import storage_service
 from app.services import bill_parser
+from app.services.auth import get_current_user
 
 router = APIRouter(prefix="/bills", tags=["bills"])
 
@@ -19,7 +21,7 @@ MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 @router.post("/upload")
 def upload_bill(
     file: UploadFile = File(...),
-    user_id: uuid.UUID = Form(...),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     # Validate extension
@@ -47,7 +49,7 @@ def upload_bill(
     
     # 2. Create Bill row
     bill = Bill(
-        user_id=user_id,
+        user_id=current_user.id,
         raw_file_url=file_path,
         status=BillStatus.uploaded,
         total_amount=0.0  # Will update after parsing or keep as placeholder
@@ -107,9 +109,9 @@ def upload_bill(
     }
 
 @router.get("/{bill_id}")
-def get_bill(bill_id: uuid.UUID, db: Session = Depends(get_db)):
+def get_bill(bill_id: uuid.UUID, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     bill = db.get(Bill, bill_id)
-    if not bill:
+    if not bill or bill.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Bill not found")
         
     stmt = select(BillLineItem).where(BillLineItem.bill_id == bill.id)
@@ -134,8 +136,8 @@ def get_bill(bill_id: uuid.UUID, db: Session = Depends(get_db)):
     }
 
 @router.get("")
-def list_bills(user_id: uuid.UUID, db: Session = Depends(get_db)):
-    stmt = select(Bill).where(Bill.user_id == user_id)
+def list_bills(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    stmt = select(Bill).where(Bill.user_id == current_user.id)
     bills = db.execute(stmt).scalars().all()
     
     return [
@@ -148,8 +150,12 @@ def list_bills(user_id: uuid.UUID, db: Session = Depends(get_db)):
     ]
 
 @router.post("/{bill_id}/explain")
-def explain_bill_endpoint(bill_id: uuid.UUID, db: Session = Depends(get_db)):
+def explain_bill_endpoint(bill_id: uuid.UUID, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     from app.services.bill_explainer import explain_bill
+    
+    bill = db.get(Bill, bill_id)
+    if not bill or bill.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Bill not found")
     
     # Note: For higher volume, this synchronous call should be moved to a background task/queue.
     try:
@@ -158,4 +164,4 @@ def explain_bill_endpoint(bill_id: uuid.UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail=str(e))
         
     # Re-fetch the bill to return it with the updated line items
-    return get_bill(bill_id, db)
+    return get_bill(bill_id, current_user, db)
