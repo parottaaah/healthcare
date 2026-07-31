@@ -23,6 +23,10 @@ DecryptCare is an AI-powered healthcare billing transparency platform designed t
 
 ### 1. Start the Backend & Infrastructure
 The easiest way to run the API alongside its required background services (Postgres and Redis) is using Docker Compose. Make sure you've copied the `.env` file first:
+
+> [!NOTE]
+> **Environment Variables & BOM**: If you edit `.env` in Notepad or another editor that adds a byte order mark (BOM), the app now handles it automatically — but if you ever see a `Field required` / `Extra inputs are not permitted` pair of errors for the same field on startup, re-save `.env` as plain UTF-8.
+
 ```bash
 cp apps/api/.env.example apps/api/.env
 docker compose up -d

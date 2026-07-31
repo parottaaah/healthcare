@@ -36,6 +36,7 @@ Thumbs.db
 
 # Docker
 *.log
- uploads/
+error_log.txt
+uploads/
 apps/api/uploads/
-apps/api/test.db  
+*.db
