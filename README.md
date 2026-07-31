@@ -138,7 +138,35 @@ We use the WhatsApp Cloud API to support bill upload and conversational QA via o
 - [x] AI-powered bill explanation
 - [x] WhatsApp webhook
 - [x] Auth
+- [x] Frontend bill dashboard
 - [ ] CI
+
+## Using the Web Dashboard
+
+The dashboard lives at `http://localhost:5173` (when running `npm run dev` in `apps/web`).
+
+### 1. Create an account
+
+Navigate to `/register` and fill in your name, email, phone number, and a password:
+
+```bash
+# Or via curl directly against the API:
+curl -X POST http://localhost:8000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@example.com","password":"mysecret","name":"Jane","phone_number":"9876543210"}'
+```
+
+### 2. Sign in
+
+Go to `/login` with your email and password. On success you'll be redirected to `/dashboard` and your bearer token is stored in `localStorage` so you stay signed in across refreshes.
+
+### 3. Upload a bill
+
+On the dashboard, click **Choose file**, pick a PDF, JPEG, or PNG (max 10 MB), then click **Upload & Parse**. The backend will OCR the file and extract line items automatically.
+
+### 4. View and explain a bill
+
+Click any bill card to see its line items. If the bill hasn't been explained yet, click **✨ Explain this bill** — this calls the AI explanation endpoint and populates each line item with a plain-language explanation. Items that look like potential overcharges are highlighted with a red **⚠️ Flagged** badge.
 
 ## Contributing
 
