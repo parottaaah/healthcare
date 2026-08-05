@@ -143,7 +143,7 @@ We use the WhatsApp Cloud API to support bill upload and conversational QA via o
 - [x] WhatsApp webhook
 - [x] Auth
 - [x] Frontend bill dashboard
-- [ ] CI
+- [x] CI
 
 ## Using the Web Dashboard
 
@@ -171,6 +171,15 @@ On the dashboard, click **Choose file**, pick a PDF, JPEG, or PNG (max 10 MB), t
 ### 4. View and explain a bill
 
 Click any bill card to see its line items. If the bill hasn't been explained yet, click **✨ Explain this bill** — this calls the AI explanation endpoint and populates each line item with a plain-language explanation. Items that look like potential overcharges are highlighted with a red **⚠️ Flagged** badge.
+
+## Continuous Integration
+
+We use GitHub Actions for CI. On every push and pull request to `main`, the CI pipeline automatically runs:
+
+1. **backend-test**: Runs the FastAPI backend test suite (`pytest`) with SQLite and Redis.
+2. **backend-audit**: Scans backend dependencies for known CVEs using `pip-audit`.
+3. **frontend-test**: Builds the Vite React frontend and runs its test suite.
+4. **frontend-audit**: Scans frontend dependencies for known vulnerabilities using `npm audit`.
 
 ## Deployment
 

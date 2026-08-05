@@ -19,13 +19,13 @@ export function RegisterPage() {
     setError(null);
     setLoading(true);
     try {
-      const { access_token } = await registerApi({
+      await registerApi({
         email,
         password,
         name,
         phone_number: phone,
       });
-      login(access_token);
+      login();
       navigate("/dashboard");
     } catch (err: unknown) {
       const msg =

@@ -9,6 +9,7 @@ import * as authApi from '../api/auth'
 vi.mock('../api/auth')
 
 function renderLoginPage() {
+  vi.mocked(authApi.getMe).mockRejectedValue(new Error('unauthenticated'))
   return render(
     <MemoryRouter initialEntries={['/login']}>
       <AuthProvider>
@@ -24,23 +25,22 @@ describe('LoginPage', () => {
     localStorage.clear()
   })
 
-  it('renders login form fields', () => {
+  it('renders login form fields', async () => {
     renderLoginPage()
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
+    expect(await screen.findByLabelText(/email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
   })
 
-  it('calls login API and stores token on success', async () => {
-    const mockToken = 'test-jwt-token-abc123'
+  it('calls login API on success', async () => {
     vi.mocked(authApi.login).mockResolvedValueOnce({
-      access_token: mockToken,
-      token_type: 'bearer',
+      message: 'Logged in successfully',
     })
 
     renderLoginPage()
 
-    fireEvent.change(screen.getByLabelText(/email/i), {
+    const emailInput = await screen.findByLabelText(/email/i)
+    fireEvent.change(emailInput, {
       target: { value: 'test@example.com' },
     })
     fireEvent.change(screen.getByLabelText(/password/i), {
@@ -54,9 +54,6 @@ describe('LoginPage', () => {
         password: 'password123',
       })
     })
-
-    // Token should be stored in localStorage
-    expect(localStorage.getItem('token')).toBe(mockToken)
   })
 
   it('shows error message on login failure', async () => {
@@ -66,7 +63,8 @@ describe('LoginPage', () => {
 
     renderLoginPage()
 
-    fireEvent.change(screen.getByLabelText(/email/i), {
+    const emailInput = await screen.findByLabelText(/email/i)
+    fireEvent.change(emailInput, {
       target: { value: 'wrong@example.com' },
     })
     fireEvent.change(screen.getByLabelText(/password/i), {

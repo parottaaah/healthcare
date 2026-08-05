@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
+import uuid
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
 from app.db import get_db
 from app.models.user import User
-from app.services.auth import hash_password, verify_password, create_access_token
+from app.services.auth import hash_password, verify_password, create_access_token, get_current_user
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -19,12 +20,16 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
+class Message(BaseModel):
+    message: str
 
-@router.post("/register", response_model=Token)
-def register(user_data: UserCreate, db: Session = Depends(get_db)):
+class UserResponse(BaseModel):
+    id: str
+    email: EmailStr
+    name: str
+
+@router.post("/register", response_model=Message)
+def register(user_data: UserCreate, response: Response, db: Session = Depends(get_db)):
     # Check if email exists
     stmt = select(User).where(User.email == user_data.email)
     existing_email = db.execute(stmt).scalar_one_or_none()
@@ -48,10 +53,13 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     db.refresh(user)
 
     token = create_access_token(str(user.id))
-    return {"access_token": token}
+    csrf_token = uuid.uuid4().hex
+    response.set_cookie(key="access_token", value=token, httponly=True, secure=True, samesite="strict")
+    response.set_cookie(key="csrf_token", value=csrf_token, httponly=False, secure=True, samesite="strict")
+    return {"message": "Registered successfully"}
 
-@router.post("/login", response_model=Token)
-def login(user_data: UserLogin, db: Session = Depends(get_db)):
+@router.post("/login", response_model=Message)
+def login(user_data: UserLogin, response: Response, db: Session = Depends(get_db)):
     stmt = select(User).where(User.email == user_data.email)
     user = db.execute(stmt).scalar_one_or_none()
     
@@ -62,4 +70,21 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
     token = create_access_token(str(user.id))
-    return {"access_token": token}
+    csrf_token = uuid.uuid4().hex
+    response.set_cookie(key="access_token", value=token, httponly=True, secure=True, samesite="strict")
+    response.set_cookie(key="csrf_token", value=csrf_token, httponly=False, secure=True, samesite="strict")
+    return {"message": "Logged in successfully"}
+
+@router.get("/me", response_model=UserResponse)
+def get_me(current_user: User = Depends(get_current_user)):
+    return {
+        "id": str(current_user.id),
+        "email": current_user.email,
+        "name": current_user.name
+    }
+
+@router.post("/logout", response_model=Message)
+def logout(response: Response):
+    response.delete_cookie("access_token")
+    response.delete_cookie("csrf_token")
+    return {"message": "Logged out successfully"}

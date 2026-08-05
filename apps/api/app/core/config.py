@@ -11,6 +11,13 @@ class Settings(BaseSettings):
     jwt_secret: str = "secret"
     jwt_expires_in_minutes: int = 60
     frontend_origin: str = "http://localhost:5173"
+    
+    # AWS S3 Storage Settings
+    s3_bucket_name: str | None = None
+    aws_region: str | None = None
+    aws_access_key_id: str | None = None
+    aws_secret_access_key: str | None = None
+    kms_key_id: str | None = None
 
     class Config:
         env_file = ".env"
