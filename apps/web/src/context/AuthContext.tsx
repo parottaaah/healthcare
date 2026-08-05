@@ -36,7 +36,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   if (isLoading) {
-    return <div className="loading-state">Loading...</div>;
+    return (
+      <div className="loading-state">
+        <div className="spinner" aria-label="Loading session"></div>
+        <p>Loading…</p>
+      </div>
+    );
   }
 
   return (
