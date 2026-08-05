@@ -17,8 +17,8 @@ export function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const { access_token } = await loginApi({ email, password });
-      login(access_token);
+      await loginApi({ email, password });
+      login();
       navigate("/dashboard");
     } catch (err: unknown) {
       const msg =

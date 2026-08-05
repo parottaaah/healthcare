@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
@@ -10,7 +10,7 @@ from app.db import get_db
 from app.models.user import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
 
 ALGORITHM = "HS256"
 
@@ -37,8 +37,23 @@ def decode_access_token(token: str) -> dict:
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
     import uuid
+    
+    token = request.cookies.get("access_token")
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
+
     payload = decode_access_token(token)
     user_id_str: str = payload.get("sub")
     if user_id_str is None:
@@ -54,3 +69,14 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise HTTPException(status_code=401, detail="User not found")
         
     return user
+
+def verify_csrf(request: Request):
+    if request.url.path in ["/auth/login", "/auth/register"] or request.url.path.startswith("/webhooks"):
+        return
+
+    if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
+        csrf_cookie = request.cookies.get("csrf_token")
+        csrf_header = request.headers.get("x-csrf-token")
+        
+        if not csrf_cookie or not csrf_header or csrf_cookie != csrf_header:
+            raise HTTPException(status_code=403, detail="CSRF token validation failed")

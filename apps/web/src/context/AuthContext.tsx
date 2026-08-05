@@ -1,32 +1,47 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { getMe, logout as logoutApi } from "../api/auth";
 
 interface AuthContextValue {
-  token: string | null;
   isAuthenticated: boolean;
-  login: (token: string) => void;
+  isLoading: boolean;
+  login: () => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem("token")
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const login = useCallback((newToken: string) => {
-    localStorage.setItem("token", newToken);
-    setToken(newToken);
+  useEffect(() => {
+    getMe()
+      .then(() => setIsAuthenticated(true))
+      .catch(() => setIsAuthenticated(false))
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("token");
-    setToken(null);
+  const login = useCallback(() => {
+    setIsAuthenticated(true);
   }, []);
+
+  const logout = useCallback(async () => {
+    try {
+      await logoutApi();
+    } catch (e) {
+      // ignore
+    } finally {
+      setIsAuthenticated(false);
+    }
+  }, []);
+
+  if (isLoading) {
+    return <div className="loading-state">Loading...</div>;
+  }
 
   return (
     <AuthContext.Provider
-      value={{ token, isAuthenticated: !!token, login, logout }}
+      value={{ isAuthenticated, isLoading, login, logout }}
     >
       {children}
     </AuthContext.Provider>

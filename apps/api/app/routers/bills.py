@@ -95,7 +95,7 @@ def upload_bill(
         "user_id": bill.user_id,
         "status": bill.status,
         "total_amount": bill.total_amount,
-        "raw_file_url": bill.raw_file_url,
+        "raw_file_url": storage_service.get_presigned_url(bill.raw_file_url) if bill.raw_file_url else None,
         "line_items": [
             {
                 "id": li.id,
@@ -122,7 +122,7 @@ def get_bill(bill_id: uuid.UUID, current_user: User = Depends(get_current_user),
         "user_id": bill.user_id,
         "status": bill.status,
         "total_amount": bill.total_amount,
-        "raw_file_url": bill.raw_file_url,
+        "raw_file_url": storage_service.get_presigned_url(bill.raw_file_url) if bill.raw_file_url else None,
         "line_items": [
             {
                 "id": li.id,

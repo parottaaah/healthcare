@@ -4,17 +4,19 @@ import { MemoryRouter } from 'react-router-dom'
 import { AuthProvider } from '../context/AuthContext'
 import { DashboardPage } from '../pages/DashboardPage'
 import * as billsApi from '../api/bills'
+import * as authApi from '../api/auth'
 import type { Bill } from '../api/bills'
 
 vi.mock('../api/bills')
+vi.mock('../api/auth')
 
 // Mock fetch for health footer
 globalThis.fetch = vi.fn().mockResolvedValue({
   json: () => Promise.resolve({ status: 'ok' }),
 } as Response)
 
-function renderDashboard(token = 'mock-token') {
-  localStorage.setItem('token', token)
+function renderDashboard() {
+  vi.mocked(authApi.getMe).mockResolvedValue({ id: '1', email: 'test@test.com', name: 'Test' })
   return render(
     <MemoryRouter initialEntries={['/dashboard']}>
       <AuthProvider>
@@ -70,10 +72,10 @@ describe('DashboardPage', () => {
     localStorage.clear()
   })
 
-  it('shows loading state initially', () => {
+  it('shows loading state initially', async () => {
     vi.mocked(billsApi.getBills).mockReturnValue(new Promise(() => {})) // Never resolves
     renderDashboard()
-    expect(screen.getByLabelText(/loading bills/i)).toBeInTheDocument()
+    expect(await screen.findByLabelText(/loading bills/i)).toBeInTheDocument()
   })
 
   it('renders list of bills from API', async () => {

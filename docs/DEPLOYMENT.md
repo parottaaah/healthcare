@@ -23,6 +23,11 @@ In your Railway API service settings, add the following variables:
 - `WHATSAPP_PHONE_NUMBER_ID`: Your WhatsApp phone number ID.
 - `WHATSAPP_VERIFY_TOKEN`: A custom string you will use to verify the webhook.
 - `FRONTEND_ORIGIN`: The URL of your Vercel frontend (e.g., `https://decryptcare.vercel.app`), which configuring CORS.
+- `S3_BUCKET_NAME`: (Optional but recommended) The name of your AWS S3 bucket for storing medical bills. If omitted, falls back to local disk storage.
+- `AWS_REGION`: The AWS region for your S3 bucket (e.g., `us-east-1`).
+- `AWS_ACCESS_KEY_ID`: Your AWS access key with S3 permissions.
+- `AWS_SECRET_ACCESS_KEY`: Your AWS secret key.
+- `KMS_KEY_ID`: (Optional) A KMS Key ID for encrypting S3 objects. If omitted, AES-256 encryption is used.
 
 ### Running Migrations
 After the backend is deployed, you must run the database migrations on the production database:
