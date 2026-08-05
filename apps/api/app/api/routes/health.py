@@ -16,6 +16,6 @@ def health_check(db: Session = Depends(get_db)):
 
     return {
         "status": "ok",
-        "service": "decryptcare-api",
+        "service": "sezhi-api",
         "db": "ok" if db_ok else "unreachable",
     }

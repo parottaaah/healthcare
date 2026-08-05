@@ -104,8 +104,8 @@ export function BillDetailPage() {
     <div className="app-layout">
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <span className="logo-icon">🩺</span>
-          <span className="logo-text">DecryptCare</span>
+          <span className="logo-icon">🌿</span>
+          <span className="logo-text">Sezhi</span>
         </div>
         <nav className="sidebar-nav">
           <Link className="nav-item" to="/dashboard">📋 My Bills</Link>

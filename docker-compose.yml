@@ -1,7 +1,7 @@
 services:
   api:
     build: ./apps/api
-    container_name: decryptcare-api
+    container_name: sezhi-api
     restart: unless-stopped
     ports:
       - "8000:8000"
@@ -16,12 +16,12 @@ services:
 
   postgres:
     image: postgres:16
-    container_name: decryptcare-postgres
+    container_name: sezhi-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: decryptcare
+      POSTGRES_USER: sezhi
       POSTGRES_PASSWORD: devpassword
-      POSTGRES_DB: decryptcare
+      POSTGRES_DB: sezhi
     ports:
       - "5432:5432"
     volumes:
@@ -29,7 +29,7 @@ services:
 
   redis:
     image: redis:7
-    container_name: decryptcare-redis
+    container_name: sezhi-redis
     restart: unless-stopped
     ports:
       - "6379:6379"

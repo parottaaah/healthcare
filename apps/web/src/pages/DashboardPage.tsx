@@ -86,8 +86,8 @@ export function DashboardPage() {
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <span className="logo-icon">🩺</span>
-          <span className="logo-text">DecryptCare</span>
+          <span className="logo-icon">🌿</span>
+          <span className="logo-text">Sezhi</span>
         </div>
         <nav className="sidebar-nav">
           <a className="nav-item active" href="/dashboard">📋 My Bills</a>

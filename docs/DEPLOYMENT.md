@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This document outlines how to deploy DecryptCare's FastAPI backend and Vite frontend to production using Railway and Vercel.
+This document outlines how to deploy Sezhi's FastAPI backend and Vite frontend to production using Railway and Vercel.
 
 ## 1. Backend (API) Deployment to Railway
 
@@ -22,7 +22,7 @@ In your Railway API service settings, add the following variables:
 - `WHATSAPP_ACCESS_TOKEN`: The permanent access token from your Meta App.
 - `WHATSAPP_PHONE_NUMBER_ID`: Your WhatsApp phone number ID.
 - `WHATSAPP_VERIFY_TOKEN`: A custom string you will use to verify the webhook.
-- `FRONTEND_ORIGIN`: The URL of your Vercel frontend (e.g., `https://decryptcare.vercel.app`), which configuring CORS.
+- `FRONTEND_ORIGIN`: The URL of your Vercel frontend (e.g., `https://sezhi.vercel.app`), which configuring CORS.
 - `S3_BUCKET_NAME`: (Optional but recommended) The name of your AWS S3 bucket for storing medical bills. If omitted, falls back to local disk storage.
 - `AWS_REGION`: The AWS region for your S3 bucket (e.g., `us-east-1`).
 - `AWS_ACCESS_KEY_ID`: Your AWS access key with S3 permissions.
@@ -60,7 +60,7 @@ Vercel is optimized for deploying Vite/React applications.
    - **Build Command**: `npm run build`
    - **Output Directory**: `dist`
 4. Expand the "Environment Variables" section and add:
-   - `VITE_API_URL`: The URL of your deployed Railway backend (e.g., `https://decryptcare-production.up.railway.app`).
+   - `VITE_API_URL`: The URL of your deployed Railway backend (e.g., `https://sezhi-production.up.railway.app`).
 5. Click **Deploy**.
 
 ---

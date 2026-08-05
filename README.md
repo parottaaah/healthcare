@@ -1,6 +1,6 @@
-# DecryptCare
+# Sezhi
 
-DecryptCare is an AI-powered healthcare billing transparency platform designed to empower patients with clear, actionable insights into their medical expenses, featuring a conversational WhatsApp assistant named Nalam.
+Sezhi is an AI-powered healthcare billing transparency platform designed to empower patients with clear, actionable insights into their medical expenses, featuring a conversational WhatsApp assistant named Sezhi.
 
 ## Project Structure
 
@@ -119,9 +119,9 @@ Environment variables are managed through `.env` files. We provide template file
 To configure your environment, copy these `.example` files to `.env` in their respective directories and fill in the actual values. 
 **WARNING: Never commit a real `.env` file containing actual secrets.**
 
-## WhatsApp Integration (Nalam)
+## WhatsApp Integration (Sezhi)
 
-We use the WhatsApp Cloud API to support bill upload and conversational QA via our assistant, Nalam.
+We use the WhatsApp Cloud API to support bill upload and conversational QA via our assistant, Sezhi.
 
 ### Setup Instructions
 1. **Meta Developer App**: Go to the [Meta Developer Dashboard](https://developers.facebook.com/), create a Business app, and set up the WhatsApp product.
@@ -183,10 +183,10 @@ We use GitHub Actions for CI. On every push and pull request to `main`, the CI p
 
 ## Deployment
 
-DecryptCare is configured for deployment using **Railway** (Backend & Infrastructure) and **Vercel** (Frontend).
+Sezhi is configured for deployment using **Railway** (Backend & Infrastructure) and **Vercel** (Frontend).
 See the full [Deployment Guide](docs/DEPLOYMENT.md) for step-by-step instructions.
 
-**Live Demo:** [https://decryptcare.vercel.app](https://decryptcare.vercel.app) *(Placeholder)*
+**Live Demo:** [https://sezhi.vercel.app](https://sezhi.vercel.app) *(Placeholder)*
 
 ## Contributing
 
