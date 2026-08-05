@@ -40,8 +40,8 @@ export function RegisterPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <div className="auth-logo">🩺</div>
-        <h1 className="auth-title">DecryptCare</h1>
+        <div className="auth-logo">🌿</div>
+        <h1 className="auth-title">செழி<br/>Sezhi</h1>
         <p className="auth-subtitle">Create your account</p>
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">

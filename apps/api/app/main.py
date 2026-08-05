@@ -7,7 +7,7 @@ from app.routers import whatsapp
 from app.routers import auth
 from app.core.config import settings
 
-app = FastAPI(title="DecryptCare API", dependencies=[Depends(verify_csrf)])
+app = FastAPI(title="Sezhi API", dependencies=[Depends(verify_csrf)])
 
 # Setup CORS
 app.add_middleware(
