@@ -1,25 +1,42 @@
 import os
 import re
-import pytesseract
-from PIL import Image
-from pdf2image import convert_from_path
+try:
+    import pytesseract
+    from PIL import Image
+    from pdf2image import convert_from_path
+    OCR_AVAILABLE = True
+except ImportError:
+    OCR_AVAILABLE = False
+
+from app.services.storage import storage_service
 
 def extract_text(file_path: str) -> str:
     """
     Extracts text from an image or PDF using Tesseract OCR.
     If PDF, converts to images first.
     """
+    if not OCR_AVAILABLE:
+        return "OCR is not available (dependencies not installed)."
+
     ext = os.path.splitext(file_path)[1].lower()
     text = ""
     
-    if ext == ".pdf":
-        pages = convert_from_path(file_path)
-        for page in pages:
-            text += pytesseract.image_to_string(page) + "\n"
-    else:
-        image = Image.open(file_path)
-        text = pytesseract.image_to_string(image)
-        
+    # Download to a temporary file if in S3
+    local_path = storage_service.download_to_temp(file_path)
+    
+    try:
+        if ext == ".pdf":
+            pages = convert_from_path(local_path)
+            for page in pages:
+                text += pytesseract.image_to_string(page) + "\n"
+        else:
+            image = Image.open(local_path)
+            text = pytesseract.image_to_string(image)
+    finally:
+        # Clean up temp file if one was created
+        if local_path != file_path and os.path.exists(local_path):
+            os.remove(local_path)
+            
     return text
 
 def parse_line_items(raw_text: str) -> list[dict]:

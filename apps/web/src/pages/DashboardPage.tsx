@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef, FormEvent } from "react";
+import { useState, useEffect, useRef } from "react";
+import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getBills, uploadBill, Bill } from "../api/bills";
+import { getBills, uploadBill } from "../api/bills";
+import type { Bill } from "../api/bills";
 import { useAuth } from "../context/AuthContext";
 
 function StatusBadge({ status }: { status: Bill["status"] }) {
@@ -84,8 +86,8 @@ export function DashboardPage() {
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <span className="logo-icon">🩺</span>
-          <span className="logo-text">DecryptCare</span>
+          <span className="logo-icon">🌿</span>
+          <span className="logo-text">Sezhi</span>
         </div>
         <nav className="sidebar-nav">
           <a className="nav-item active" href="/dashboard">📋 My Bills</a>

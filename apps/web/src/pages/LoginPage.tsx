@@ -1,4 +1,5 @@
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as loginApi } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
@@ -16,8 +17,8 @@ export function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const { access_token } = await loginApi({ email, password });
-      login(access_token);
+      await loginApi({ email, password });
+      login();
       navigate("/dashboard");
     } catch (err: unknown) {
       const msg =
@@ -32,8 +33,8 @@ export function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <div className="auth-logo">🩺</div>
-        <h1 className="auth-title">DecryptCare</h1>
+        <div className="auth-logo">🌿</div>
+        <h1 className="auth-title">செழி<br/>Sezhi</h1>
         <p className="auth-subtitle">Sign in to your account</p>
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">

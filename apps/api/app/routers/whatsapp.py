@@ -100,7 +100,7 @@ async def receive_webhook(request: Request, db: Session = Depends(get_db)):
                         if last_bill_id:
                             answer = answer_question(last_bill_id, text, db)
                         else:
-                            answer = "Hello! I am Nalam. Please upload a medical bill (image or PDF) so I can help you analyze it."
+                            answer = "வணக்கம் 👋 Hi! I'm Sezhi, your AI healthcare companion. I help you understand healthcare costs, medical bills, reports, and medical terminology using simple language. How can I help you today? Please upload a medical bill to get started."
                             
                         whatsapp_client.send_text_message(phone_number, answer)
                         store_message(conversation.id, Role.assistant, answer, db)

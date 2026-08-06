@@ -4,12 +4,14 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from '../context/AuthContext'
 import { BillDetailPage } from '../pages/BillDetailPage'
 import * as billsApi from '../api/bills'
-import { Bill } from '../api/bills'
+import * as authApi from '../api/auth'
+import type { Bill } from '../api/bills'
 
 vi.mock('../api/bills')
+vi.mock('../api/auth')
 
-function renderBillDetail(billId: string, token = 'mock-token') {
-  localStorage.setItem('token', token)
+function renderBillDetail(billId: string) {
+  vi.mocked(authApi.getMe).mockResolvedValue({ id: '1', email: 'test@test.com', name: 'Test' })
   return render(
     <MemoryRouter initialEntries={[`/bills/${billId}`]}>
       <AuthProvider>

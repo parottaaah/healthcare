@@ -1,6 +1,6 @@
-# DecryptCare
+# Sezhi
 
-DecryptCare is an AI-powered healthcare billing transparency platform designed to empower patients with clear, actionable insights into their medical expenses, featuring a conversational WhatsApp assistant named Nalam.
+Sezhi is an AI-powered healthcare billing transparency platform designed to empower patients with clear, actionable insights into their medical expenses, featuring a conversational WhatsApp assistant named Sezhi.
 
 ## Project Structure
 
@@ -119,9 +119,9 @@ Environment variables are managed through `.env` files. We provide template file
 To configure your environment, copy these `.example` files to `.env` in their respective directories and fill in the actual values. 
 **WARNING: Never commit a real `.env` file containing actual secrets.**
 
-## WhatsApp Integration (Nalam)
+## WhatsApp Integration (Sezhi)
 
-We use the WhatsApp Cloud API to support bill upload and conversational QA via our assistant, Nalam.
+We use the WhatsApp Cloud API to support bill upload and conversational QA via our assistant, Sezhi.
 
 ### Setup Instructions
 1. **Meta Developer App**: Go to the [Meta Developer Dashboard](https://developers.facebook.com/), create a Business app, and set up the WhatsApp product.
@@ -143,7 +143,7 @@ We use the WhatsApp Cloud API to support bill upload and conversational QA via o
 - [x] WhatsApp webhook
 - [x] Auth
 - [x] Frontend bill dashboard
-- [ ] CI
+- [x] CI
 
 ## Using the Web Dashboard
 
@@ -172,12 +172,21 @@ On the dashboard, click **Choose file**, pick a PDF, JPEG, or PNG (max 10 MB), t
 
 Click any bill card to see its line items. If the bill hasn't been explained yet, click **✨ Explain this bill** — this calls the AI explanation endpoint and populates each line item with a plain-language explanation. Items that look like potential overcharges are highlighted with a red **⚠️ Flagged** badge.
 
+## Continuous Integration
+
+We use GitHub Actions for CI. On every push and pull request to `main`, the CI pipeline automatically runs:
+
+1. **backend-test**: Runs the FastAPI backend test suite (`pytest`) with SQLite and Redis.
+2. **backend-audit**: Scans backend dependencies for known CVEs using `pip-audit`.
+3. **frontend-test**: Builds the Vite React frontend and runs its test suite.
+4. **frontend-audit**: Scans frontend dependencies for known vulnerabilities using `npm audit`.
+
 ## Deployment
 
-DecryptCare is configured for deployment using **Railway** (Backend & Infrastructure) and **Vercel** (Frontend).
+Sezhi is configured for deployment using **Railway** (Backend & Infrastructure) and **Vercel** (Frontend).
 See the full [Deployment Guide](docs/DEPLOYMENT.md) for step-by-step instructions.
 
-**Live Demo:** [https://decryptcare.vercel.app](https://decryptcare.vercel.app) *(Placeholder)*
+**Live Demo:** [https://sezhi.vercel.app](https://sezhi.vercel.app) *(Placeholder)*
 
 ## Contributing
 

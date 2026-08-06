@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getBill, explainBill, Bill, BillLineItem } from "../api/bills";
+import { getBill, explainBill } from "../api/bills";
+import type { Bill, BillLineItem } from "../api/bills";
 
 function formatCurrency(amount: number, currency: string) {
   try {
@@ -103,8 +104,8 @@ export function BillDetailPage() {
     <div className="app-layout">
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <span className="logo-icon">🩺</span>
-          <span className="logo-text">DecryptCare</span>
+          <span className="logo-icon">🌿</span>
+          <span className="logo-text">Sezhi</span>
         </div>
         <nav className="sidebar-nav">
           <Link className="nav-item" to="/dashboard">📋 My Bills</Link>

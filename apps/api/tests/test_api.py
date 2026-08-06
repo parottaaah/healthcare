@@ -35,7 +35,7 @@ def test_health_check():
     assert response.status_code == 200
     assert response.json() == {
         "status": "ok",
-        "service": "decryptcare-api",
+        "service": "sezhi-api",
         "db": "ok"
     }
 
@@ -44,10 +44,11 @@ def test_create_user(db_session=None):
     import uuid
     
     db = TestingSessionLocal()
+    unique_suffix = uuid.uuid4().hex[:8]
     new_user = User(
-        phone_number="1234567890",
+        phone_number=f"123-{unique_suffix}",
         name="Test User",
-        email="test@example.com"
+        email=f"test_{unique_suffix}@example.com"
     )
     db.add(new_user)
     db.commit()

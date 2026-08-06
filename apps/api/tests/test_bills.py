@@ -78,12 +78,14 @@ def test_upload_bill(mock_extract, tmp_path):
     db.refresh(new_user)
     
     token = create_access_token(str(new_user.id))
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {"Authorization": f"Bearer {token}", "x-csrf-token": "dummy_csrf"}
+    cookies = {"csrf_token": "dummy_csrf"}
     
     with open(test_file_path, "rb") as f:
         response = client.post(
             "/bills/upload",
             headers=headers,
+            cookies=cookies,
             files={"file": ("test_bill.jpg", f, "image/jpeg")}
         )
         
@@ -114,12 +116,14 @@ def test_upload_invalid_extension(tmp_path):
     db.refresh(new_user)
     
     token = create_access_token(str(new_user.id))
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {"Authorization": f"Bearer {token}", "x-csrf-token": "dummy_csrf"}
+    cookies = {"csrf_token": "dummy_csrf"}
     
     with open(test_file_path, "rb") as f:
         response = client.post(
             "/bills/upload",
             headers=headers,
+            cookies=cookies,
             files={"file": ("test_bill.txt", f, "text/plain")}
         )
     assert response.status_code == 400
@@ -175,19 +179,21 @@ def test_explain_bill_endpoint(mock_extract, mock_anthropic, tmp_path):
     db.refresh(new_user)
     
     token = create_access_token(str(new_user.id))
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {"Authorization": f"Bearer {token}", "x-csrf-token": "dummy_csrf"}
+    cookies = {"csrf_token": "dummy_csrf"}
     
     with open(test_file_path, "rb") as f:
         upload_resp = client.post(
             "/bills/upload",
             headers=headers,
+            cookies=cookies,
             files={"file": ("test_bill2.jpg", f, "image/jpeg")}
         )
     
     bill_id = upload_resp.json()["id"]
     
     # Call explain
-    explain_resp = client.post(f"/bills/{bill_id}/explain", headers=headers)
+    explain_resp = client.post(f"/bills/{bill_id}/explain", headers=headers, cookies=cookies)
     assert explain_resp.status_code == 200
     
     data = explain_resp.json()
